@@ -1,0 +1,65 @@
+micronaut:
+  application:
+    name: onboardingPlatform
+  
+  server:
+    port: 8080
+    cors:
+      enabled: true
+      configurations:
+        web:
+          allowed-origins:
+            - http://localhost:3000
+          allowed-methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          allowed-headers:
+            - "*"
+          exposed-headers:
+            - "*"
+          max-age: 3600
+
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/onboarding_db
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    dialect: POSTGRES
+
+jpa:
+  default:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: validate
+        show_sql: false
+        format_sql: true
+        use_sql_comments: true
+
+flyway:
+  datasources:
+    default:
+      enabled: true
+      baseline-on-migrate: true
+      locations:
+        - classpath:db/migration
+
+jackson:
+  serialization:
+    indent-output: true
+  deserialization:
+    fail-on-unknown-properties: false
+  serialization-inclusion: non_null
+
+# Logging
+logger:
+  levels:
+    com.example.onboarding: DEBUG
+    io.micronaut.data.query: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
