@@ -61,7 +61,7 @@ public interface AuditEventRepository extends JpaRepository<AuditEvent, UUID> {
     /**
      * Find recent events (last N events)
      */
-    List<AuditEvent> findTop50ByOrderByTimestampDesc();
+//    List<AuditEvent> findTop50ByOrderByTimestampDesc();
 
     /**
      * Count events by type

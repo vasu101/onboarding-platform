@@ -26,14 +26,12 @@ public class AuditEvent {
     @GeneratedValue
     private UUID id;
 
-    // What process was affected
     @Column(name = "process_id", nullable = false)
     private UUID processId;
 
     @Column(name = "subject_email", length = 100)
     private String subjectEmail;
 
-    // What happened
     @Column(name = "event_type", nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
     private AuditEventType eventType;
@@ -41,7 +39,6 @@ public class AuditEvent {
     @Column(name = "description", length = 500)
     private String description;
 
-    // State changes
     @Column(name = "previous_state", length = 50)
     @Enumerated(EnumType.STRING)
     private OnboardingState previousState;
@@ -50,32 +47,25 @@ public class AuditEvent {
     @Enumerated(EnumType.STRING)
     private OnboardingState newState;
 
-    // Who did it
     @Column(name = "performed_by", nullable = false, length = 255)
     private String performedBy;
 
-    // When
     @DateCreated
     @Column(nullable = false, updatable = false)
     private Instant timestamp;
 
-    // Additional context (JSON)
     @Column(columnDefinition = "TEXT")
     private String metadata;
 
-    // IP address for security
     @Column(name = "ip_address", length = 45)
     private String ipAddress;
 
-    // User agent
     @Column(name = "user_agent", length = 500)
     private String userAgent;
 
-    // Constructors
     public AuditEvent() {
     }
 
-    // Getters (no setters - immutable after creation)
     public UUID getId() {
         return id;
     }
@@ -124,7 +114,6 @@ public class AuditEvent {
         return userAgent;
     }
 
-    // Builder pattern for immutable construction
     public static Builder builder() {
         return new Builder();
     }

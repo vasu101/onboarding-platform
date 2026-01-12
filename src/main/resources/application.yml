@@ -23,6 +23,12 @@ micronaut:
             - "*"
           max-age: 3600
 
+  security:
+    enabled: false  # Disable security for now
+
+test-resources:
+  enabled: false  # Disable test resources, use manual PostgreSQL
+
 datasources:
   default:
     url: jdbc:postgresql://localhost:5432/onboarding_db
@@ -36,7 +42,7 @@ jpa:
     properties:
       hibernate:
         hbm2ddl:
-          auto: validate
+          auto: validate  # Flyway handles schema, Hibernate just validates
         show_sql: false
         format_sql: true
         use_sql_comments: true

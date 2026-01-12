@@ -11,6 +11,8 @@ import com.onboarding.platform.core.process.OnboardingProcessRepository;
 import com.onboarding.platform.core.state.OnboardingState;
 import com.onboarding.platform.core.subject.OnboardingSubject;
 import com.onboarding.platform.core.subject.OnboardingSubjectRepository;
+import com.onboarding.platform.verification.model.VerificationResult;
+import com.onboarding.platform.verification.service.VerificationService;
 import com.onboarding.platform.workflow.validation.StateTransitionValidator;
 import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
@@ -33,17 +35,20 @@ public class OnboardingWorkflowService {
     private final OnboardingSubjectRepository subjectRepository;
     private final StateTransitionValidator stateValidator;
     private final AuditService auditService;
+    private final VerificationService verificationService;
 
     public OnboardingWorkflowService(
             OnboardingProcessRepository processRepository,
             OnboardingSubjectRepository subjectRepository,
             StateTransitionValidator stateValidator,
-            AuditService auditService
+            AuditService auditService,
+            VerificationService verificationService
     ) {
         this.processRepository = processRepository;
         this.subjectRepository = subjectRepository;
         this.stateValidator = stateValidator;
         this.auditService = auditService;
+        this.verificationService = verificationService;
     }
 
     @Transactional
@@ -198,6 +203,21 @@ public class OnboardingWorkflowService {
 
         LOG.info("Verification started for onboarding {}", processId);
         return updated;
+    }
+
+    @Transactional
+    public OnboardingProcess autoVerify(UUID processId, String performedBy) {
+        LOG.info("Auto-verifying onboarding {}", processId);
+
+        OnboardingProcess process = getProcess(processId);
+
+        if(process.getCurrentState() != OnboardingState.VERIFICATION_IN_PROGRESS) {
+            process = startVerification(processId, performedBy);
+        }
+
+        VerificationResult result = verificationService.verify(process);
+
+        return completeVerification(processId, result.isPassed(), result.getSummary(), performedBy);
     }
 
     @Transactional
