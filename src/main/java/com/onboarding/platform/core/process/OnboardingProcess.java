@@ -2,13 +2,15 @@ package com.onboarding.platform.core.process;
 
 import com.onboarding.platform.core.state.OnboardingState;
 import com.onboarding.platform.core.subject.OnboardingSubject;
-import io.micronaut.data.annotation.*;
-import io.micronaut.data.annotation.GeneratedValue;
-import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.Version;
 import io.micronaut.serde.annotation.Serdeable;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -22,7 +24,8 @@ import java.util.UUID;
 public class OnboardingProcess {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
     // Link to subject
@@ -97,6 +100,8 @@ public class OnboardingProcess {
     private Instant updatedAt;
 
     @Version
+    @Column(nullable = false)
+    @Generated(event = EventType.INSERT)
     private Long version;
 
     public OnboardingProcess() {

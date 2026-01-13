@@ -1,13 +1,17 @@
 package com.onboarding.platform.core.subject;
 
 import com.onboarding.platform.core.type.OnboardingType;
-import io.micronaut.data.annotation.*;
-import io.micronaut.data.annotation.GeneratedValue;
-import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.Version;
 import io.micronaut.serde.annotation.Serdeable;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.generator.EventType;
+
+import java.net.http.HttpClient;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -21,7 +25,8 @@ import java.util.UUID;
 public class OnboardingSubject {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
     @Column(nullable = false)
@@ -74,6 +79,8 @@ public class OnboardingSubject {
     private Instant updatedAt;
 
     @Version
+    @Column(nullable = false)
+    @Generated(event = EventType.INSERT)
     private Long version;
 
     public OnboardingSubject() {

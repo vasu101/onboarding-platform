@@ -23,7 +23,8 @@ import java.util.UUID;
 public class AuditEvent {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
     @Column(name = "process_id", nullable = false)

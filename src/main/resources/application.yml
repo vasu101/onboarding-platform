@@ -1,7 +1,7 @@
 micronaut:
   application:
     name: onboardingPlatform
-  
+
   server:
     port: 8080
     cors:
@@ -18,31 +18,35 @@ micronaut:
             - DELETE
             - OPTIONS
           allowed-headers:
-            - "*"
+            - Content-Type
+            - Authorization
           exposed-headers:
-            - "*"
+            - Authorization
           max-age: 3600
 
   security:
-    enabled: false  # Disable security for now
+    enabled: false
 
-test-resources:
-  enabled: false  # Disable test resources, use manual PostgreSQL
+  test:
+    resources:
+      enabled: false
+
+  openapi:
+    enabled: true
 
 datasources:
   default:
     url: jdbc:postgresql://localhost:5432/onboarding_db
     driverClassName: org.postgresql.Driver
-    username: postgres
-    password: postgres
-    dialect: POSTGRES
+    username: onboarding_app
+    password: onboarding_app
 
 jpa:
   default:
     properties:
       hibernate:
         hbm2ddl:
-          auto: validate  # Flyway handles schema, Hibernate just validates
+          auto: validate
         show_sql: false
         format_sql: true
         use_sql_comments: true
@@ -62,10 +66,12 @@ jackson:
     fail-on-unknown-properties: false
   serialization-inclusion: non_null
 
-# Logging
-logger:
+logging:
   levels:
     com.example.onboarding: DEBUG
     io.micronaut.data.query: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+swagger:
+  enabled: true
