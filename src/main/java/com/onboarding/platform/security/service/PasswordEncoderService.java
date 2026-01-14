@@ -18,12 +18,11 @@ import java.util.Base64;
 public class PasswordEncoderService {
 
     private static final Logger LOG = LoggerFactory.getLogger(PasswordEncoderService.class);
-    private static final String ALGORITHM = "SHA_256";
+    private static final String ALGORITHM = "SHA-256";
     private static final int SALT_LENGTH = 16;
-    private final SecureRandom secureRandom;
+    private final SecureRandom secureRandom = new SecureRandom();
 
-    public PasswordEncoderService(SecureRandom secureRandom) {
-        this.secureRandom = secureRandom;
+    public PasswordEncoderService() {
     }
 
     /**

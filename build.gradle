@@ -29,6 +29,7 @@ dependencies {
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("io.micronaut.flyway:micronaut-flyway")
     implementation("org.flywaydb:flyway-core")
+    implementation("io.micronaut.reactor:micronaut-reactor")
     implementation("org.flywaydb:flyway-database-postgresql")
     compileOnly("io.micronaut:micronaut-http-client")
     compileOnly("io.micronaut.openapi:micronaut-openapi-annotations")

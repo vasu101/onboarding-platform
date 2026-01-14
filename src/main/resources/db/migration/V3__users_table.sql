@@ -20,38 +20,6 @@ CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_active ON users(active);
 
--- Insert default admin user (password: admin123)
-INSERT INTO users (id, username, email, password_hash, full_name, role, active, email_verified, created_at, updated_at, version)
-VALUES (
-           gen_random_uuid(),
-           'admin',
-           'admin@onboarding.com',
-           'YWRtaW4xMjM=',
-           'System Administrator',
-           'ADMIN',
-           TRUE,
-           TRUE,
-           NOW(),
-           NOW(),
-           0
-       );
-
--- Insert default reviewer (password: reviewer123)
-INSERT INTO users (id, username, email, password_hash, full_name, role, active, email_verified, created_at, updated_at, version)
-VALUES (
-           gen_random_uuid(),
-           'reviewer',
-           'reviewer@onboarding.com',
-           'cmV2aWV3ZXIxMjM=',
-           'System Reviewer',
-           'REVIEWER',
-           TRUE,
-           TRUE,
-           NOW(),
-           NOW(),
-           0
-       );
-
 -- Comments
 COMMENT ON TABLE users IS 'User accounts for authentication and authorization';
 COMMENT ON COLUMN users.password_hash IS 'SHA-256 hashed password with salt';

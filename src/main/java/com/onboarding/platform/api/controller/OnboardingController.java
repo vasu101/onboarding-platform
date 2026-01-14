@@ -6,6 +6,9 @@ import com.onboarding.platform.core.process.OnboardingProcess;
 import com.onboarding.platform.core.process.OnboardingProcessRepository;
 import com.onboarding.platform.core.state.OnboardingState;
 import com.onboarding.platform.core.subject.OnboardingSubject;
+import com.onboarding.platform.security.annotation.RequiresRole;
+import com.onboarding.platform.security.model.UserRole;
+import com.onboarding.platform.security.util.CurrentUserUtil;
 import com.onboarding.platform.workflow.service.OnboardingWorkflowService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
@@ -25,7 +28,6 @@ import java.util.stream.Collectors;
 public class OnboardingController {
 
     private static final Logger LOG = LoggerFactory.getLogger(OnboardingController.class);
-    private static final String DEFAULT_USER = "system";
 
     private final OnboardingWorkflowService workflowService;
     private final OnboardingProcessRepository processRepository;
@@ -38,16 +40,19 @@ public class OnboardingController {
     }
 
     @Post
+    @RequiresRole({UserRole.ADMIN, UserRole.CUSTOMER})
     public HttpResponse<OnboardingResponse> createOnboarding(@Valid @Body CreateOnboardingRequest request) {
+        String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Creating onboarding for email: {}", request.getEmail());
 
         OnboardingSubject subject = mapper.toSubjectEntity(request);
-        OnboardingProcess process = workflowService.createOnboarding(subject, DEFAULT_USER);
+        OnboardingProcess process = workflowService.createOnboarding(subject, currentUser);
 
         return HttpResponse.created(mapper.toResponse(process));
     }
 
     @Get("/{id}")
+    @RequiresRole({UserRole.ADMIN, UserRole.CUSTOMER, UserRole.APPROVER, UserRole.REVIEWER})
     public HttpResponse<OnboardingResponse> getOnboarding(@PathVariable UUID id) {
         LOG.info("Fetching onboarding: {}", id);
 
@@ -58,6 +63,7 @@ public class OnboardingController {
     }
 
     @Get
+    @RequiresRole({UserRole.ADMIN, UserRole.APPROVER, UserRole.REVIEWER})
     public HttpResponse<List<OnboardingResponse>> getAllOnboardings(@Nullable @QueryValue OnboardingState state) {
         LOG.info("Fetching all onboardings, state filter: {}", state);
 
@@ -73,80 +79,99 @@ public class OnboardingController {
     }
 
     @Post("/{id}/submit")
+    @RequiresRole({UserRole.ADMIN, UserRole.CUSTOMER})
     public HttpResponse<OnboardingResponse> submitOnboarding(@PathVariable UUID id) {
+        String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Submitting onboarding: {}", id);
 
-        OnboardingProcess process = workflowService.submitForReview(id, DEFAULT_USER);
+        OnboardingProcess process = workflowService.submitForReview(id, currentUser);
         return HttpResponse.ok(mapper.toResponse(process));
     }
 
     @Post("/{id}/request-correction")
+    @RequiresRole({UserRole.ADMIN, UserRole.REVIEWER, UserRole.ADMIN})
     public HttpResponse<OnboardingResponse> requestCorrection(@PathVariable UUID id, @Valid @Body CorrectionRequest request) {
+        String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Requesting corrections for onboarding: {}", id);
 
-        OnboardingProcess process = workflowService.requestCorrection(id, request.getComments(), DEFAULT_USER);
+        OnboardingProcess process = workflowService.requestCorrection(id, request.getComments(), currentUser);
         return HttpResponse.ok(mapper.toResponse(process));
     }
 
     @Post("/{id}/submit-corrections")
+    @RequiresRole({UserRole.ADMIN, UserRole.CUSTOMER})
     public HttpResponse<OnboardingResponse> submitCorrections(@PathVariable UUID id) {
+        String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Submitting corrections for onboarding: {}", id);
 
-        OnboardingProcess process = workflowService.submitCorrections(id, DEFAULT_USER);
+        OnboardingProcess process = workflowService.submitCorrections(id, currentUser);
         return HttpResponse.ok(mapper.toResponse(process));
     }
 
     @Post("/{id}/start-verification")
+    @RequiresRole({UserRole.ADMIN, UserRole.REVIEWER})
     public HttpResponse<OnboardingResponse> startVerification(@PathVariable UUID id) {
+        String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Starting verification for onboarding: {}", id);
 
-        OnboardingProcess process = workflowService.startVerification(id, DEFAULT_USER);
+        OnboardingProcess process = workflowService.startVerification(id, currentUser);
         return HttpResponse.ok(mapper.toResponse(process));
     }
 
     @Post("/{id}/complete-verification")
+    @RequiresRole({UserRole.ADMIN, UserRole.REVIEWER})
     public HttpResponse<OnboardingResponse> completeVerification(@PathVariable UUID id, @Valid @Body VerificationRequest request) {
+        String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Completing verification for onboarding: {}, passed: {}", id, request.getPassed());
 
-        OnboardingProcess process = workflowService.completeVerification(id, request.getPassed(), request.getDetails(), DEFAULT_USER);
+        OnboardingProcess process = workflowService.completeVerification(id, request.getPassed(), request.getDetails(), currentUser);
         return HttpResponse.ok(mapper.toResponse(process));
 
     }
 
     @Post("/{id}/approve")
+    @RequiresRole({UserRole.ADMIN, UserRole.APPROVER})
     public HttpResponse<OnboardingResponse> approve(@PathVariable UUID id, @Nullable @Valid @Body ApprovalRequest request) {
+        String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Approving onboarding: {}", id);
 
         String comments = request != null ? request.getComments() : null;
-        OnboardingProcess process = workflowService.approve(id, comments, DEFAULT_USER);
+        OnboardingProcess process = workflowService.approve(id, comments, currentUser);
         return HttpResponse.ok(mapper.toResponse(process));
     }
 
     @Post("/{id}/reject")
+    @RequiresRole({UserRole.ADMIN, UserRole.APPROVER})
     public HttpResponse<OnboardingResponse> reject(@PathVariable UUID id, @Valid @Body RejectionRequest request) {
+        String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Rejecting onboarding: {}", id);
 
-        OnboardingProcess process = workflowService.reject(id, request.getReason(), DEFAULT_USER);
+        OnboardingProcess process = workflowService.reject(id, request.getReason(), currentUser);
         return HttpResponse.ok(mapper.toResponse(process));
     }
 
     @Post("/{id}/complete")
+    @RequiresRole({UserRole.ADMIN})
     public HttpResponse<OnboardingResponse> complete(@PathVariable UUID id) {
+        String currentUser =CurrentUserUtil.getCurrentUsername();
         LOG.info("Completing onboarding: {}", id);
 
-        OnboardingProcess process = workflowService.complete(id, DEFAULT_USER);
+        OnboardingProcess process = workflowService.complete(id, currentUser);
         return HttpResponse.ok(mapper.toResponse(process));
     }
 
     @Post("/{id}/cancel")
+    @RequiresRole({UserRole.ADMIN, UserRole.CUSTOMER})
     public HttpResponse<OnboardingResponse> cancel(@PathVariable UUID id, @Valid @Body CancellationRequest request) {
+        String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Cancelling onboarding: {}", id);
 
-        OnboardingProcess process = workflowService.cancel(id, request.getReason() ,DEFAULT_USER);
+        OnboardingProcess process = workflowService.cancel(id, request.getReason() ,currentUser);
         return HttpResponse.ok(mapper.toResponse(process));
     }
 
     @Get("/pending-review")
+    @RequiresRole({UserRole.ADMIN, UserRole.REVIEWER, UserRole.APPROVER})
     public HttpResponse<List<OnboardingResponse>> getPendingReview() {
         LOG.info("Fetching onboardings pending review");
 
@@ -159,6 +184,7 @@ public class OnboardingController {
     }
 
     @Get("/requiring-action")
+    @RequiresRole({UserRole.ADMIN, UserRole.CUSTOMER})
     public HttpResponse<List<OnboardingResponse>> getRequiringAction() {
         LOG.info("Fetching onboardings requiring action");
 
