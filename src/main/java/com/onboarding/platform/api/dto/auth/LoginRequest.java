@@ -1,15 +1,19 @@
-package com.onboarding.platform.api.dto;
+package com.onboarding.platform.api.dto.auth;
 
 import io.micronaut.serde.annotation.Serdeable;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 @Serdeable
+@Schema(description = "Login credentials")
 public class LoginRequest {
 
     @NotBlank
+    @Schema(description = "Username", example = "admin", requiredMode = Schema.RequiredMode.REQUIRED)
     private String username;
 
     @NotBlank
+    @Schema(description = "Password", example = "admin123", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
     public String getUsername() { return username; }

@@ -245,3 +245,6 @@ gradle-app.setting
 
 #Secret
 .env
+
+#Ai
+.cursor

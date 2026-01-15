@@ -19,6 +19,7 @@ dependencies {
     annotationProcessor("io.micronaut.security:micronaut-security-annotations")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
     annotationProcessor("io.micronaut.validation:micronaut-validation-processor")
+
     implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
     implementation("io.micronaut.security:micronaut-security-jwt")
@@ -31,13 +32,20 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("io.micronaut.reactor:micronaut-reactor")
     implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("io.micronaut.openapi:micronaut-openapi-annotations")
+    implementation("io.swagger.core.v3:swagger-annotations")
+
     compileOnly("io.micronaut:micronaut-http-client")
-    compileOnly("io.micronaut.openapi:micronaut-openapi-annotations")
+
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.yaml:snakeyaml")
+
     testImplementation("io.micronaut:micronaut-http-client")
+    testImplementation("org.mockito:mockito-core")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("com.h2database:h2")
+
     aotPlugins platform("io.micronaut.platform:micronaut-platform:4.10.6")
     aotPlugins("io.micronaut.security:micronaut-security-aot")
 }
@@ -62,8 +70,6 @@ micronaut {
         annotations("com.onboarding.platform.*")
     }
     aot {
-        // Please review carefully the optimizations enabled below
-        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
         optimizeServiceLoading = false
         convertYamlToJava = false
         precomputeOperations = true

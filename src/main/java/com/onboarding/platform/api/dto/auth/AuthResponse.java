@@ -1,19 +1,34 @@
-package com.onboarding.platform.api.dto;
+package com.onboarding.platform.api.dto.auth;
 
 import com.onboarding.platform.security.model.UserRole;
 import io.micronaut.serde.annotation.Serdeable;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
 @Serdeable
+@Schema(description = "Authentication response with JWT token")
 public class AuthResponse {
 
+    @Schema(description = "JWT access token")
     private String token;
+
+    @Schema(description = "User ID")
     private UUID userId;
+
+    @Schema(description = "Username", example = "johndoe")
     private String username;
+
+    @Schema(description = "Email address", example = "john@example.com")
     private String email;
+
+    @Schema(description = "Full name", example = "John Doe")
     private String fullName;
+
+    @Schema(description = "User role", example = "CUSTOMER")
     private UserRole role;
+
+    @Schema(description = "Token expiration time in seconds", example = "3600")
     private long expiresIn;
 
     public AuthResponse() {

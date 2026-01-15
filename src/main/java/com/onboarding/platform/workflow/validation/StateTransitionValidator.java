@@ -37,7 +37,7 @@ public class StateTransitionValidator {
                 OnboardingState.CANCELLED
         ));
 
-        // PENDING_CORRECTION can be edited and resubmitted or cancelled
+        // PENDING_CORRECTION can be edited and resubmitted or canceled
         validTransitions.put(OnboardingState.PENDING_CORRECTION, EnumSet.of(
                 OnboardingState.CORRECTED,
                 OnboardingState.CANCELLED
@@ -58,13 +58,13 @@ public class StateTransitionValidator {
                 OnboardingState.CANCELLED
         ));
 
-        // VERIFICATION_FAILED can be corrected or cancelled
+        // VERIFICATION_FAILED can be corrected or canceled
         validTransitions.put(OnboardingState.VERIFICATION_FAILED, EnumSet.of(
                 OnboardingState.CORRECTED,
                 OnboardingState.CANCELLED
         ));
 
-        // PENDING_APPROVAL can be approved, rejected, or cancelled
+        // PENDING_APPROVAL can be approved, rejected, or canceled
         validTransitions.put(OnboardingState.PENDING_APPROVAL, EnumSet.of(
                 OnboardingState.APPROVED,
                 OnboardingState.REJECTED,

@@ -15,6 +15,13 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +32,8 @@ import java.util.stream.Collectors;
 
 @Controller("/api/onboarding")
 @ExecuteOn(TaskExecutors.IO)
+@Tag(name = "Onboarding", description = "Onboarding workflow management endpoints")
+@SecurityRequirement(name = "bearerAuth")
 public class OnboardingController {
 
     private static final Logger LOG = LoggerFactory.getLogger(OnboardingController.class);
@@ -41,6 +50,20 @@ public class OnboardingController {
 
     @Post
     @RequiresRole({UserRole.ADMIN, UserRole.CUSTOMER})
+    @Operation(
+            summary = "Create new onboarding",
+            description = "Create a new onboarding process for a subject. Requires CUSTOMER or ADMIN role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Onboarding created successfully",
+                    content = @Content(schema = @Schema(implementation = OnboardingResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - insufficient permissions")
+    })
     public HttpResponse<OnboardingResponse> createOnboarding(@Valid @Body CreateOnboardingRequest request) {
         String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Creating onboarding for email: {}", request.getEmail());
@@ -53,6 +76,19 @@ public class OnboardingController {
 
     @Get("/{id}")
     @RequiresRole({UserRole.ADMIN, UserRole.CUSTOMER, UserRole.APPROVER, UserRole.REVIEWER})
+    @Operation(
+            summary = "Get onboarding by ID",
+            description = "Retrieve a specific onboarding process by its ID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Onboarding found",
+                    content = @Content(schema = @Schema(implementation = OnboardingResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Onboarding not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public HttpResponse<OnboardingResponse> getOnboarding(@PathVariable UUID id) {
         LOG.info("Fetching onboarding: {}", id);
 
@@ -64,6 +100,19 @@ public class OnboardingController {
 
     @Get
     @RequiresRole({UserRole.ADMIN, UserRole.APPROVER, UserRole.REVIEWER})
+    @Operation(
+            summary = "List all onboardings",
+            description = "Retrieve all onboarding processes, optionally filtered by state. Requires REVIEWER, APPROVER, or ADMIN role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "List of onboardings",
+                    content = @Content(schema = @Schema(implementation = OnboardingResponse.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
     public HttpResponse<List<OnboardingResponse>> getAllOnboardings(@Nullable @QueryValue OnboardingState state) {
         LOG.info("Fetching all onboardings, state filter: {}", state);
 
@@ -89,7 +138,7 @@ public class OnboardingController {
     }
 
     @Post("/{id}/request-correction")
-    @RequiresRole({UserRole.ADMIN, UserRole.REVIEWER, UserRole.ADMIN})
+    @RequiresRole({UserRole.ADMIN, UserRole.REVIEWER, UserRole.APPROVER})
     public HttpResponse<OnboardingResponse> requestCorrection(@PathVariable UUID id, @Valid @Body CorrectionRequest request) {
         String currentUser = CurrentUserUtil.getCurrentUsername();
         LOG.info("Requesting corrections for onboarding: {}", id);
