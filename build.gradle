@@ -34,11 +34,20 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("io.micronaut.openapi:micronaut-openapi-annotations")
     implementation("io.swagger.core.v3:swagger-annotations")
+    implementation("io.micrometer:context-propagation")
+    implementation("io.micronaut.data:micronaut-data-jdbc")
+    implementation("io.micronaut.security:micronaut-security-session")
+    implementation("io.micronaut.security:micronaut-security")
+    implementation("io.micronaut.views:micronaut-views-thymeleaf")
+    implementation("io.micronaut.views:micronaut-views-fieldset")
+    implementation('org.springframework.security:spring-security-crypto:6.4.5')
+    implementation("org.slf4j:jcl-over-slf4j")
 
     compileOnly("io.micronaut:micronaut-http-client")
 
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.yaml:snakeyaml")
 
     testImplementation("io.micronaut:micronaut-http-client")
@@ -46,7 +55,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("com.h2database:h2")
 
-    aotPlugins platform("io.micronaut.platform:micronaut-platform:4.10.6")
+    aotPlugins(platform("io.micronaut.platform:micronaut-platform:4.10.6"))
     aotPlugins("io.micronaut.security:micronaut-security-aot")
 }
 

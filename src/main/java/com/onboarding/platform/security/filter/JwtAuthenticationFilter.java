@@ -86,7 +86,7 @@ public class JwtAuthenticationFilter implements HttpServerFilter {
     private boolean isPublicEndpoint(String path) {
         return path.startsWith("/api/auth/") ||
                 path.equals("/api/health") ||
-                path.equals("/api/swagger") ||
-                path.startsWith("/swagger");
+                path.equals("/api/swagger-ui") ||
+                path.startsWith("/swagger-ui");
     }
 }

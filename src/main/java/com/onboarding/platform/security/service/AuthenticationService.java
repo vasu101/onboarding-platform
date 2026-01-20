@@ -4,8 +4,10 @@ package com.onboarding.platform.security.service;
 import com.onboarding.platform.security.model.User;
 import com.onboarding.platform.security.model.UserRole;
 import com.onboarding.platform.security.repository.UserRepository;
+import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +38,8 @@ public class AuthenticationService {
     public User register(String username, String email, String password, String fullName, UserRole role) {
         LOG.info("Registering new user: {}", username);
 
-        if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username already exists");
-        }
-
-        if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already exists");
+        if (userRepository.existsByUsername(username) || userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("User already exists");
         }
 
         User user = new User();
@@ -103,7 +101,7 @@ public class AuthenticationService {
         LOG.info("Password changed for user: {}", user.getUsername());
     }
 
-    public Optional<User> findByUsername(String username) {
+    public Optional<User> findByUsername(@NotBlank @NonNull String username) {
         return userRepository.findByUsername(username);
     }
 

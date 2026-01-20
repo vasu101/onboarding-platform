@@ -60,7 +60,7 @@ public class AuthenticationServiceTest {
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> authenticationService.register("existing", "new@example.com", "pass", "User", UserRole.CUSTOMER));
 
-        assertEquals("Username already exists", exception.getMessage());
+        assertEquals("User already exists", exception.getMessage());
         verify(userRepository, never()).save(any());
     }
 
